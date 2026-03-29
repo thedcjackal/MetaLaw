@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import {
   Upload, Download, FileText, ChevronRight, Languages, AlertCircle,
-  CheckCircle2, RotateCcw, Menu, X, Key, FileEdit, Info, Copy, RefreshCw, Loader2
+  CheckCircle2, RotateCcw, Menu, X, Key, FileEdit, Info, Copy, RefreshCw, Loader2,
+  ChevronDown, ChevronUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,6 +22,10 @@ function App() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfReady, setPdfReady] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Processing...');
+  
+  // Accordion state for mobile results view
+  const [isOriginalExpanded, setIsOriginalExpanded] = useState(false);
+  const [isTranslatedExpanded, setIsTranslatedExpanded] = useState(false);
 
   const FUNNY_MESSAGES = [
     "Teaching Gemini how to read Greek...",
@@ -233,38 +238,41 @@ function App() {
       </AnimatePresence>
 
       <header className="header">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="logo-container"
-        >
-          <svg className="logo-svg" viewBox="0 0 400 72" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#2563eb" />
-                <stop offset="50%" stopColor="#7c3aed" />
-                <stop offset="100%" stopColor="#2563eb" />
-                <animateTransform
-                  attributeName="gradientTransform"
-                  type="translate"
-                  from="-1 0" to="1 0"
-                  dur="4s" repeatCount="indefinite"
-                />
-              </linearGradient>
-            </defs>
-            <text x="50%" y="62" textAnchor="middle" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="62" letterSpacing="0">
-              <tspan fill="url(#logoGradient)">Meta</tspan>
-              <tspan fill="none" stroke="url(#logoGradient)" strokeWidth="1.8" strokeDasharray="1000" strokeDashoffset="0">Law</tspan>
-            </text>
-          </svg>
-        </motion.div>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          Intelligent Document Translation
-        </motion.p>
+        <div className="header-stacked-content">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="logo-container"
+          >
+            <svg className="logo-svg" viewBox="0 0 400 72" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#2563eb" />
+                  <stop offset="50%" stopColor="#7c3aed" />
+                  <stop offset="100%" stopColor="#2563eb" />
+                  <animateTransform
+                    attributeName="gradientTransform"
+                    type="translate"
+                    from="-1 0" to="1 0"
+                    dur="4s" repeatCount="indefinite"
+                  />
+                </linearGradient>
+              </defs>
+              <text x="50%" y="62" textAnchor="middle" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="62" letterSpacing="0">
+                <tspan fill="url(#logoGradient)">Meta</tspan>
+                <tspan fill="none" stroke="url(#logoGradient)" strokeWidth="1.8" strokeDasharray="1000" strokeDashoffset="0">Law</tspan>
+              </text>
+            </svg>
+          </motion.div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="header-subtext"
+          >
+            Intelligent Document Translation
+          </motion.p>
+        </div>
       </header>
 
       <main>
@@ -303,7 +311,7 @@ function App() {
                 )}
               </div>
 
-              <div style={{ marginTop: '0', display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(255, 255, 255, 0.5)', padding: '10px 20px', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
+              <div className="action-row-mobile">
                 <motion.button
                   layout
                   className="btn-primary"
@@ -352,6 +360,7 @@ function App() {
                 </motion.button>
 
                 <motion.div
+                  className="lang-toggle-container"
                   animate={{
                     width: loading ? 0 : 'auto',
                     opacity: loading ? 0 : 1,
@@ -359,24 +368,12 @@ function App() {
                     visibility: loading ? 'hidden' : 'visible'
                   }}
                   transition={{ duration: 0.4 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap'
-                  }}
                 >
-                  <div style={{ height: '32px', width: '1px', background: 'var(--border-color)', opacity: 0.5 }}></div>
+                  <div className="lang-divider"></div>
                   <Languages size={18} color="var(--accent-primary)" />
                   <motion.div
                     onClick={() => setTargetLang(prev => prev === 'GREEK' ? 'ENGLISH' : 'GREEK')}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      cursor: 'pointer',
-                      userSelect: 'none'
-                    }}
+                    className="lang-toggle-text"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -441,10 +438,15 @@ function App() {
               </div>
 
               <div className="hero-content">
-                <div className="text-viewer">
-                  <h3>
-                    ORIGINAL TRANSCRIPTION
-                    <button className="copy-btn" onClick={() => copyToClipboard(result.original_text)} title="Copy Original">
+                <div className={`text-viewer ${isOriginalExpanded ? 'expanded' : ''}`}>
+                  <h3 onClick={() => setIsOriginalExpanded(!isOriginalExpanded)} style={{ cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="mobile-chevron">
+                        {isOriginalExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </span>
+                      ORIGINAL TRANSCRIPTION
+                    </div>
+                    <button className="copy-btn" onClick={(e) => { e.stopPropagation(); copyToClipboard(result.original_text); }} title="Copy Original">
                       <Copy size={14} />
                     </button>
                   </h3>
@@ -452,10 +454,15 @@ function App() {
                     {result.original_text}
                   </div>
                 </div>
-                <div className="text-viewer">
-                  <h3>
-                    {targetLang} TRANSLATION
-                    <button className="copy-btn" onClick={() => copyToClipboard(result.translated_text)} title="Copy Translation">
+                <div className={`text-viewer ${isTranslatedExpanded ? 'expanded' : ''}`}>
+                  <h3 onClick={() => setIsTranslatedExpanded(!isTranslatedExpanded)} style={{ cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="mobile-chevron">
+                        {isTranslatedExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </span>
+                      {targetLang} TRANSLATION
+                    </div>
+                    <button className="copy-btn" onClick={(e) => { e.stopPropagation(); copyToClipboard(result.translated_text); }} title="Copy Translation">
                       <Copy size={14} />
                     </button>
                   </h3>
