@@ -76,11 +76,15 @@ async def process_document(
     model: str = Form("gemini-2.5-flash")
 ):
     try:
-        # Use hardcoded key if provided key is empty/dummy
+        # ALWAYS use the server-side API key for security and reliability
         print(f"Initializing DOCX/OCR process with model: {model}")
-        active_key = api_key if (api_key and "DUMMY" not in api_key.upper()) else GEMINI_API_KEY
+        active_key = GEMINI_API_KEY
+        
         if not active_key:
-            raise HTTPException(status_code=400, detail="Gemini API Key is missing.")
+            raise HTTPException(status_code=400, detail="Server GEMINI_API_KEY is missing in .env.")
+        
+        masked_key = f"{active_key[:6]}...{active_key[-4:]}"
+        print(f"Using server-side API Key: {masked_key}")
         # Find the uploaded file
         input_path = None
         for f in os.listdir(UPLOAD_DIR):
