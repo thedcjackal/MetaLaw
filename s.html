@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Μεταγραφή Εγγράφων Γάμου</title>
+    <style>
+        /* --- Global Reset --- */
+        body {
+            font-family: "Times New Roman", Times, serif;
+            background-color: #555;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* --- Base Page Style (Screen) --- */
+        .page {
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            page-break-after: always;
+            break-after: page;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Landscape Page Style (Screen) --- */
+        .page.landscape {
+            width: 297mm;
+            min-height: 210mm;
+            padding: 10mm;
+        }
+
+        /* --- Print Configuration --- */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+
+            .page {
+                box-shadow: none;
+                margin: 0;
+                border: none;
+                page-break-after: always;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+
+            @page landscape-mode {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+
+            .page.landscape {
+                page: landscape-mode;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        /* --- Typography --- */
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+            margin: 5px 0;
+            line-height: 1.1;
+        }
+
+        .caps-header {
+            font-size: 20pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+        }
+
+        .sub-header {
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .marriage-header {
+            font-size: 22pt;
+            color: #5a3a22;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        p,
+        li,
+        div,
+        span {
+            font-size: 11pt;
+            line-height: 1.3;
+        }
+
+        /* Flexible Rows */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            align-items: baseline;
+            flex-wrap: nowrap;
+        }
+
+        .field {
+            border-bottom: 1px solid #000;
+            padding: 0 5px;
+            font-weight: bold;
+            color: #2c3e50;
+            flex-grow: 1;
+            text-align: center;
+            min-width: 20px;
+        }
+
+        .label {
+            white-space: nowrap;
+            margin-right: 5px;
+            margin-left: 5px;
+            font-size: 10pt;
+        }
+
+        /* Seal Placeholder Styling - Updated for text content */
+        .seal-placeholder {
+            border: 2px dashed #ccc;
+            border-radius: 50%;
+            width: 100px;
+            /* Slightly wider to fit text */
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 8pt;
+            color: #555;
+            margin: 5px auto;
+            padding: 5px;
+            flex-shrink: 0;
+            font-style: italic;
+        }
+
+        .signature-placeholder {
+            font-style: italic;
+            color: #555;
+            font-weight: normal;
+        }
+
+        .signature-font {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 12pt;
+            color: #000080;
+        }
+
+        /* --- Specific Boxes --- */
+        .apostille-box {
+            border: 1px solid #000;
+            padding: 10mm;
+            margin: 5mm 0;
+        }
+
+        .apostille-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .apostille-list li {
+            margin-bottom: 8px;
+            display: flex;
+        }
+
+        .apostille-list li span:first-child {
+            width: 25px;
+            font-weight: bold;
+        }
+
+        .apostille-val {
+            font-weight: bold;
+        }
+
+        .license-box {
+            border: 4px double #5a3a22;
+            padding: 8mm;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            max-width: 275mm;
+            margin: 0 auto;
+        }
+
+        .doc-1-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .officiant-section {
+            border-top: 1px solid #000;
+            margin-top: 8px;
+            padding-top: 5px;
+        }
+
+        .license-footer-warning {
+            font-size: 8pt;
+            text-align: justify;
+            margin-top: 5px;
+            padding-top: 5px;
+            font-weight: bold;
+        }
+
+        .side-stamp {
+            border: 1px solid #ccc;
+            padding: 10mm;
+            margin-top: 15mm;
+        }
+
+        .stamp-text {
+            color: blue;
+            font-weight: bold;
+        }
+
+        .lawyer-cert-text {
+            text-align: justify;
+            line-height: 1.8;
+            margin-top: 50px;
+            font-size: 12pt;
+        }
+
+        .footer-note {
+            font-size: 8pt;
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+        <h1 class="caps-header">ΠΟΛΙΤΕΙΑ ΤΗΣ ΓΙΟΥΤΑ (STATE OF UTAH)</h1>
+        <div class="seal-placeholder" style="border: none; width: 100px; height: 100px; margin: 0 auto;">
+            (τίθεται σφραγίδα της Πολιτείας της Γιούτα)
+        </div>
+        <div class="sub-header">ΓΡΑΦΕΙΟ ΤΟΥ ΑΝΤΙΚΥΒΕΡΝΗΤΗ</div>
+
+        <div class="apostille-box">
+            <h2>Apostille (Επισημείωση)</h2>
+            <div style="text-align: center; font-style: italic; margin-bottom: 15px;">(Convention de La Haye du 5
+                octobre 1961)</div>
+
+            <ul class="apostille-list">
+                <li>
+                    <span>1.</span>
+                    <div>Χώρα: <span class="apostille-val">Ηνωμένες Πολιτείες της Αμερικής (United States of
+                            America)</span></div>
+                </li>
+                <li>
+                    <span>2.</span>
+                    <div>Το παρόν δημόσιο έγγραφο έχει υπογραφεί από: <span class="apostille-val">ΤΡΕΪΣΙ ΣΟ (TRACY
+                            SHAW)</span></div>
+                </li>
+                <li>
+                    <span>3.</span>
+                    <div>Ενεργώντας υπό την ιδιότητα του/της: <span class="apostille-val">ΓΡΑΜΜΑΤΕΑ ΚΟΜΗΤΕΙΑΣ, ΓΡΑΦΕΙΟ
+                            ΓΡΑΜΜΑΤΕΑ ΚΟΜΗΤΕΙΑΣ ΤΟΥΕΛΕ (TOOELE)</span></div>
+                </li>
+                <li>
+                    <span>4.</span>
+                    <div>Φέρει τη σφραγίδα/σήμα της: <span class="apostille-val">ΚΟΜΗΤΕΙΑΣ ΤΟΥ ΤΟΥΕΛΕ (TOOELE), ΠΟΛΙΤΕΙΑ
+                            ΤΗΣ ΓΙΟΥΤΑ (UTAH)</span></div>
+                </li>
+            </ul>
+
+            <h3>Πιστοποιήθηκε</h3>
+
+            <ul class="apostille-list">
+                <li>
+                    <span>5.</span>
+                    <div>στο: <span class="apostille-val">Σολτ Λέικ Σίτι (Salt Lake City), Γιούτα (Utah), Η.Π.Α.
+                            (U.S.A.)</span></div>
+                </li>
+                <li>
+                    <span>6.</span>
+                    <div>την: <span class="apostille-val">29η ημέρα του Ιανουαρίου, 2025</span></div>
+                </li>
+                <li>
+                    <span>7.</span>
+                    <div>από: <span class="apostille-val">Ντίντρι Μ. Χέντερσον (Deidre M. Henderson), Αντικυβερνήτη,
+                            Πολιτεία της Γιούτα (Utah), Η.Π.Α. (U.S.A.)</span></div>
+                </li>
+                <li>
+                    <span>8.</span>
+                    <div>Αριθμός: <span class="apostille-val">532022</span></div>
+                </li>
+            </ul>
+
+            <div class="row" style="margin-top: 30px; align-items: flex-end;">
+                <div style="width: 40%;">
+                    <span>9. Σφραγίδα/Σήμα:</span>
+                    <div class="seal-placeholder"
+                        style="border: 2px solid gold; color: #555; font-weight: normal; font-size: 8pt;">
+                        (τίθεται σφραγίδα της Πολιτείας της Γιούτα)
+                    </div>
+                </div>
+                <div style="width: 50%;">
+                    <span>10. Υπογραφή:</span>
+                    <div class="field signature-placeholder"
+                        style="border-bottom: none; font-size: 14pt; text-align: left;">[Υπογραφή]</div>
+                    <div><strong>Ντίντρι Μ. Χέντερσον (Deidre M. Henderson)</strong><br>Αντικυβερνήτης</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Η παρούσα πιστοποίηση βεβαιώνει μόνο τη γνήσιοτητα της υπογραφής του αξιωματούχου που υπέγραψε το συνημμένο
+            έγγραφο, την ιδιότητα με την οποία ενήργησε ο εν λόγω αξιωματούχος και, κατά περίπτωση, την ταυτότητα της
+            σφραγίδας ή του σήματος που φέρει το έγγραφο. Η παρούσα πιστοποίηση δεν προορίζεται να υπονοήσει ότι το
+            περιεχόμενο του εγγράφου είναι ορθό, ούτε ότι έχει την έγκριση της Πολιτείας της Γιούτα.
+        </div>
+    </div>
+
+    <div class="page landscape">
+        <div class="license-box">
+            <div class="doc-1-header">
+                <div><strong>Πολιτεία της Γιούτα (Utah)</strong></div>
+                <div style="text-align: right;"><strong>Κομητεία Τουέλε (Tooele)</strong></div>
+            </div>
+
+            <h1 class="marriage-header">Πιστοποιητικό Άδειας Γάμου</h1>
+            <div
+                style="text-align: right; border: 1px solid black; padding: 2px 8px; display: inline-block; float: right; margin-top: -30px;">
+                No. <strong>M249834</strong>
+            </div>
+            <div style="clear: both;"></div>
+
+            <p style="text-align: center; font-style: italic; margin: 10px 0;">
+                Προς κάθε πρόσωπο νομικά εξουσιοδοτημένο να τελέσει γάμο, δια του παρόντος εξουσιοδοτείστε να ενώσετε με
+                τα δεσμά του Ιερού Γάμου:
+            </p>
+
+            <div class="row">
+                <span class="field">ΙΝΤΟ ΣΟΣΑΝΑ (IDO SHOSHANA)</span>
+                <span class="label">από</span>
+                <span class="field">ΜΠΑΛΦΟΥΡΙΑ (BALFOURIA)</span>
+                <span class="label">στην Κομητεία/Χώρα</span>
+                <span class="field">ΙΣΡΑΗΛ (ISRAEL)</span>
+            </div>
+            <div class="row">
+                <span class="label">και Πολιτεία</span>
+                <span class="field">ΙΣΡΑΗΛ (ISRAEL)</span>
+                <span class="label">ηλικίας</span>
+                <span class="field">49</span>
+                <span class="label">ετών</span>
+            </div>
+
+            <div class="row" style="margin-top: 10px;">
+                <span class="label">και</span>
+                <span class="field">ΡΟΤΕΜ ΑΒΡΟΥΤΣΚΙ (ROTEM AVRUTSKY)</span>
+                <span class="label">από</span>
+                <span class="field">ΡΙΣΟΝ ΛΕ ΤΣΙΟΝ (RISHON LEZION)</span>
+                <span class="label">στην Κομητεία/Χώρα</span>
+                <span class="field">ΙΣΡΑΗΛ (ISRAEL)</span>
+            </div>
+            <div class="row">
+                <span class="label">και Πολιτεία</span>
+                <span class="field">ΙΣΡΑΗΛ (ISRAEL)</span>
+                <span class="label">ηλικίας</span>
+                <span class="field">54</span>
+                <span class="label">ετών</span>
+            </div>
+
+            <p style="margin: 10px 0;">
+                Σε πίστωση των ανωτέρω, θέτω την υπογραφή μου και την επίσημη σφραγίδα μου στο γραφείο μου στο Τουέλε
+                (Tooele), Κομητεία Τουέλε (Tooele), Πολιτεία της Γιούτα (Utah), την
+                <strong>13η</strong> Ημέρα του <strong>ΔΕΚΕΜΒΡΙΟΥ</strong> μ.Χ. <strong>2024</strong>
+            </p>
+
+            <div class="row">
+                <div class="seal-placeholder">
+                    (τίθεται σφραγίδα της Κομητείας του Τουέλε)
+                </div>
+                <div style="width: 60%;">
+                    <div class="row">
+                        <span class="label">Από</span>
+                        <span class="field signature-placeholder">[Υπογραφή]</span>
+                    </div>
+                    <div style="text-align: center;">Γραμματέας Κομητείας Τουέλε (Tooele)</div>
+                </div>
+            </div>
+
+            <div class="officiant-section">
+                <p>Εγώ, ο/η κάτωθι υπογεγραμμένος/η πιστοποιώ ότι ένωσα τα ανωτέρω αναφερόμενα πρόσωπα με τα δεσμά του
+                    ιερού γάμου σύμφωνα με τους νόμους της Πολιτείας της Γιούτα (Utah) και μερίμνησα για την υπογραφή
+                    τους παρακάτω.</p>
+
+                <div class="row">
+                    <span class="label" style="width: 140px;">Υπογραφή Αιτούντος #1</span>
+                    <span class="field signature-placeholder">[Υπογραφή]</span>
+                    <span class="label">Μάρτυρας</span>
+                    <span class="field">Βλαντ Μ. Φινκελστάιν (Vlad M. Finkelshtein)</span>
+                </div>
+                <div class="row">
+                    <span class="label" style="width: 140px;">Υπογραφή Αιτούντος #2</span>
+                    <span class="field signature-placeholder">[Υπογραφή]</span>
+                    <span class="label">Μάρτυρας</span>
+                    <span class="field">Ραΐσα Καβάκα (Raisa Kavaka)</span>
+                </div>
+
+                <div class="row">
+                    <span class="label" style="width: 140px;">Υπογραφή Τελεστή</span>
+                    <span class="field signature-placeholder">[Υπογραφή]</span>
+                    <span class="label">Ημερομηνία Τελετής</span>
+                    <span class="field">13 Δεκεμβρίου 2024</span>
+                </div>
+                <div class="row">
+                    <span class="label" style="width: 140px;">Ονοματεπώνυμο Τελεστή</span>
+                    <span class="field signature-font">Ναντέζντα Ποτάποβα (Nadezhda Potapova)</span>
+                </div>
+                <div class="row">
+                    <span class="label" style="width: 140px;">Τίτλος Τελεστή</span>
+                    <span class="field">Λειτουργός</span>
+                    <span class="label">Πόλη/Κομητεία</span>
+                    <span class="field">Σολτ Λέικ Σίτι (Salt Lake City), Κομητεία Σολτ Λέικ (Salt Lake), Γιούτα
+                        (Utah)</span>
+                </div>
+                <div class="row">
+                    <span class="label" style="width: 140px;">Διεύθυνση Τελετής</span>
+                    <span class="field">50 Γουέστ Μπρόντγουεϊ Στ. Σουίτα 300 (50 W Broadway St. Suite 300)</span>
+                </div>
+                <div class="row" style="border: 1px solid black; padding: 2px 5px; margin-top: 5px;">
+                    <span class="label">Ημ/νία Καταχώρησης</span>
+                    <span class="field">12-23-2024</span>
+                    <span class="label">Από</span>
+                    <span class="field signature-placeholder">[Υπογραφή]</span>
+                    <span class="label">Γραμματέα ή Αναπληρωτή</span>
+                </div>
+
+                <div class="license-footer-warning">
+                    Η παρούσα Άδεια Γάμου ΠΡΕΠΕΙ ΝΑ ΧΡΗΣΙΜΟΠΟΙΗΘΕΙ ΕΝΤΟΣ 30 ΗΜΕΡΩΝ από την ημερομηνία έκδοσης. Το
+                    πρόσωπο που τελεί τον γάμο οφείλει εντός 30 ημερών ακολούθως να επιστρέψει την άδεια με την υπογραφή
+                    του στον γραμματέα της κομητείας, δηλώνοντας την ημερομηνία και τον τόπο τέλεσης και την υπογραφή
+                    δύο μαρτύρων. Σε περίπτωση παράλειψης της εν λόγω επιστροφής, καθίσταται ένοχος πλημμελήματος.
+                    (Κώδικας Γιούτα 30-1-11)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="side-stamp">
+            <h3>ΠΟΛΙΤΕΙΑ ΤΗΣ ΓΙΟΥΤΑ (UTAH) } επ.<br><span style="text-transform: none;">Κομητεία του Τουέλε
+                    (Tooele)</span></h3>
+
+            <p style="line-height: 1.6;">
+                Η <strong>ΤΡΕΪΣΙ ΣΟ (TRACY SHAW)</strong>, Γραμματέας της Κομητείας στην Πολιτεία της Γιούτα (Utah), για
+                την Κομητεία του Τουέλε (Tooele), δια του παρόντος πιστοποιώ ότι το προηγούμενο αντίγραφο του<br>
+                <span class="stamp-text"
+                    style="font-size: 1.1em; display: block; text-align: center; margin: 8px 0;">Πιστοποιητικού Άδειας
+                    Γάμου</span>
+                έχει αντιπαραβληθεί από εμένα με το πρωτότυπο αυτού, που βρίσκεται τώρα καταχωρημένο στο αρχείο του
+                γραφείου μου και ότι το ίδιο είναι πλήρες, αληθές και ακριβές αντίγραφο αυτού και του συνόλου του εν
+                λόγω πρωτοτύπου, όπως αυτό εμφανίζεται στο αρχείο του γραφείου μου και υπό τη φύλαξή μου.
+            </p>
+
+            <p style="margin-top: 20px;">
+                <strong>ΣΕ ΠΙΣΤΩΣΗ ΤΩΝ ΑΝΩΤΕΡΩ</strong> έθεσα την υπογραφή μου και την επίσημη σφραγίδα μου την <span
+                    class="stamp-text">21η</span> ημέρα του <span class="stamp-text">Ιανουαρίου</span>, <span
+                    class="stamp-text">2025</span>
+            </p>
+
+            <div class="row" style="margin-top: 30px;">
+                <div style="flex-grow: 1;">
+                    <p><strong>ΤΡΕΪΣΙ ΣΟ (TRACY SHAW), Γραμματέας</strong></p>
+                    <div class="row" style="margin-top: 15px;">
+                        <span class="label">Από</span>
+                        <span class="field signature-placeholder">[Υπογραφή]</span>
+                        <span class="label">Αναπληρωτή Γραμματέα</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 30px;">
+                <span class="label">Αρ. Φακέλου</span>
+                <span class="field stamp-text">M249834</span>
+                <span class="label">Αρχική Καταχώρηση</span>
+                <span class="field stamp-text">12/23/2024</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <p class="lawyer-cert-text">
+            Το παρόν κείμενο αποτελεί πιστή μετάφραση στην ελληνική γλώσσα από το επισυναπτόμενο, σε επικυρωμένο
+            αντίγραφο, έγγραφο που είναι γραμμένο στην Αγγλική γλώσσα. Εκδίδω δε την μετάφραση αυτή σύμφωνα με το άρθρο
+            36 παρ.2γ του Κωδ. Δικηγ. βεβαιώνοντας συγχρόνως ότι έχω επαρκή γνώση της γλώσσας από την οποία μεταφράζω. Η
+            ως άνω μετάφραση έχει πλήρη ισχύ έναντι οποιασδήποτε δικαστικής ή άλλης αρχής σύμφωνα με το προαναφερόμενο
+            άρθρο.
+        </p>
+
+        <div style="margin-top: 60px;">
+            <p>Χανιά 08-01-2026</p>
+            <p style="margin-top: 50px; font-weight: bold;">Η Μεταφράσασα και Βεβαιούσα Δικηγόρος</p>
+            <div style="margin-top: 40px; border-bottom: 1px dotted black; width: 300px;"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>

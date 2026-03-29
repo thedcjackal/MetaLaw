@@ -1,0 +1,30 @@
+# MetaLaw GitIgnore
+
+# Environments & Sensitive
+.env
+backend/.env
+venv/
+backend/venv/
+backend/.venv/
+node_modules/
+frontend/node_modules/
+.pm2/
+dump.pm2
+
+# Python
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Production Builds
+frontend/dist/
+
+# Document Data (Privacy)
+backend/temp_uploads/
+backend/temp_outputs/
+backend/uploads/
+backend/outputs/
+
+# VS Code / OS
+.vscode/
+Thumbs.db
