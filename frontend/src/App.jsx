@@ -22,7 +22,7 @@ function App() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfReady, setPdfReady] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Processing...');
-  
+
   // Accordion state for mobile results view
   const [isOriginalExpanded, setIsOriginalExpanded] = useState(false);
   const [isTranslatedExpanded, setIsTranslatedExpanded] = useState(false);
@@ -260,7 +260,7 @@ function App() {
               </defs>
               <text x="50%" y="62" textAnchor="middle" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="62" letterSpacing="0">
                 <tspan fill="url(#logoGradient)">Meta</tspan>
-                <tspan fill="none" stroke="url(#logoGradient)" strokeWidth="1.8" strokeDasharray="1000" strokeDashoffset="0">Law</tspan>
+                <tspan className="logo-law" fill="none" stroke="url(#logoGradient)" strokeWidth="1.8" strokeDasharray="1000" strokeDashoffset="0">Law</tspan>
               </text>
             </svg>
           </motion.div>
@@ -277,122 +277,155 @@ function App() {
 
       <main>
         <motion.section
-          className={`u-card ${result ? 'hero-expanded' : ''}`}
-          animate={{ maxWidth: result ? '1200px' : '800px' }}
-          transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+          layout
+          className={`u-card ${result ? 'hero-expanded' : ''} ${loading ? 'hero-loading' : ''}`}
+          animate={{
+            maxWidth: result ? '1200px' : (loading ? '600px' : '800px'),
+            padding: loading ? '24px' : '16px'
+          }}
+          transition={{ type: 'spring', damping: 25, stiffness: 120 }}
         >
           {!result ? (
             <>
-              <div
-                className={`upload-zone ${dragging ? 'dragging' : ''}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current.click()}
-              >
-                <input
-                  type="file"
-                  hidden
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept=".pdf,image/*,application/pdf"
-                />
-                <Upload size={40} strokeWidth={1} />
-                {file ? (
-                  <div>
-                    <p style={{ color: 'var(--accent-primary)', fontWeight: 700, fontSize: '1.1rem' }}>{file.name}</p>
-                    <p className="text-muted">Click or drag to replace</p>
-                  </div>
-                ) : (
-                  <div>
-                    <p style={{ fontSize: '1.4rem', fontWeight: 600 }}>Drop document to begin</p>
-                    <p className="text-muted">PDF or Image &bull; AI-Powered Precision</p>
-                  </div>
+              <AnimatePresence>
+                {!loading && (
+                  <motion.div
+                    key="upload-zone"
+                    initial={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0, marginBottom: 0, overflow: 'hidden' }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className={`upload-zone ${dragging ? 'dragging' : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    <input
+                      type="file"
+                      hidden
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept=".pdf,image/*,application/pdf"
+                    />
+                    <Upload size={40} strokeWidth={1} />
+                    {file ? (
+                      <div>
+                        <p style={{ color: 'var(--accent-primary)', fontWeight: 700, fontSize: '1.1rem' }}>{file.name}</p>
+                        <p className="text-muted">Click or drag to replace</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p style={{ fontSize: '1.4rem', fontWeight: 600 }}>Drop document to begin</p>
+                        <p className="text-muted">PDF or Image &bull; AI-Powered Precision</p>
+                      </div>
+                    )}
+                  </motion.div>
                 )}
-              </div>
+              </AnimatePresence>
 
-              <div className="action-row-mobile">
+              <div className={`action-row-mobile ${loading ? 'loading-full-width' : ''}`}>
                 <motion.button
                   layout
                   className="btn-primary"
                   onClick={processFile}
                   disabled={loading || !file}
                   style={{
-                    flexGrow: loading ? 1 : 0,
+                    flexGrow: 0,
                     justifyContent: 'center',
-                    minWidth: loading ? '100%' : '240px',
-                    height: '56px',
+                    width: loading ? '450px' : 'auto',
+                    maxWidth: '100%',
+                    minHeight: '56px',
+                    height: loading ? 'auto' : '56px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    overflow: 'hidden'
+                    padding: loading ? '12px 20px' : '0 28px',
+                    overflow: 'hidden',
+                    margin: loading ? '0 auto' : '0'
                   }}
                   transition={{ duration: 0.6, type: 'spring', damping: 25, stiffness: 100 }}
                 >
                   {loading ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '320px', justifyContent: 'center' }}>
+                    <motion.div
+                      layout="position"
+                      style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}
+                      transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+                    >
                       <Loader2 size={18} className="spin" style={{ flexShrink: 0 }} />
-                      <div style={{ position: 'relative', height: '1.2em', flexGrow: 1, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <AnimatePresence mode="wait">
+                      <motion.div
+                        layout
+                        style={{ position: 'relative', flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '2.5em' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+                      >
+                        <AnimatePresence>
                           <motion.span
                             key={loadingMessage}
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -15 }}
-                            transition={{ duration: 0.4 }}
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              whiteSpace: 'normal', 
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{
+                              opacity: 0,
+                              scale: 0.95,
+                              y: -10,
+                              position: 'absolute', /* Allow cross-fade without popping */
+                              transition: { duration: 0.2 }
+                            }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            style={{
+                              fontSize: '0.8rem',
+                              whiteSpace: 'normal',
                               textAlign: 'center',
                               lineHeight: '1.2',
                               display: 'block',
-                              width: '100%'
+                              width: '100%',
+                              padding: '0 20px'
                             }}
                           >
                             {loadingMessage}
                           </motion.span>
                         </AnimatePresence>
-                      </div>
-                    </div>
+                      </motion.div>
+                    </motion.div>
                   ) : (
                     <>Generate Document <ChevronRight size={18} /></>
                   )}
                 </motion.button>
 
-                <motion.div
-                  className="lang-toggle-container"
-                  animate={{
-                    width: loading ? 0 : 'auto',
-                    opacity: loading ? 0 : 1,
-                    marginLeft: loading ? 0 : 16,
-                    visibility: loading ? 'hidden' : 'visible'
-                  }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="lang-divider"></div>
-                  <Languages size={18} color="var(--accent-primary)" />
-                  <motion.div
-                    onClick={() => setTargetLang(prev => prev === 'GREEK' ? 'ENGLISH' : 'GREEK')}
-                    className="lang-toggle-text"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="text-muted" style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' }}>Target</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent-primary)' }}>
-                        {targetLang === 'GREEK' ? 'Greek' : 'English'}
-                      </span>
-                      <RotateCcw size={10} style={{ opacity: 0.6 }} />
-                    </div>
-                  </motion.div>
-                </motion.div>
+                <AnimatePresence>
+                  {!loading && (
+                    <motion.div
+                      key="lang-toggle"
+                      className="lang-toggle-container"
+                      initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                      animate={{ opacity: 1, width: 'auto', marginLeft: 16 }}
+                      exit={{ opacity: 0, width: 0, marginLeft: 0, overflow: 'hidden' }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="lang-divider"></div>
+                      <Languages size={18} color="var(--accent-primary)" />
+                      <motion.div
+                        onClick={() => setTargetLang(prev => prev === 'GREEK' ? 'ENGLISH' : 'GREEK')}
+                        className="lang-toggle-text"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span className="text-muted" style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' }}>Target</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent-primary)' }}>
+                            {targetLang === 'GREEK' ? 'Greek' : 'English'}
+                          </span>
+                          <RotateCcw size={10} style={{ opacity: 0.6 }} />
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </>
           ) : (
             <div className="hero-results">
               <div className="hero-sidebar">
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ display: 'inline-flex', padding: '12px', background: '#ecfdf5', borderRadius: '50%', marginBottom: '12px' }}>
+                  <div style={{ display: 'inline-flex', marginTop: '12px', padding: '12px', background: '#ecfdf5', borderRadius: '50%', marginBottom: '12px' }}>
                     <CheckCircle2 size={28} color="#059669" />
                   </div>
                   <h3>Analysis Ready</h3>
