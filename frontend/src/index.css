@@ -55,11 +55,23 @@ body {
   margin: 0;
   padding: 40px 20px 20px 20px;
   gap: 20px;
-  transition: all 0.4s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .results-view .header {
   min-height: 15vh;
+}
+
+@media (max-width: 600px) {
+  .header {
+    min-height: 20vh;
+    padding-top: 60px;
+    gap: 15px;
+  }
+  .results-view .header {
+    min-height: 10vh;
+    padding-bottom: 10px;
+  }
 }
 
 main {
@@ -102,6 +114,13 @@ main {
   height: 100px;
   width: auto;
   filter: drop-shadow(0 10px 30px rgba(37, 99, 235, 0.1));
+  transition: height 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .logo-svg {
+    height: 70px;
+  }
 }
 
 @keyframes fadeInDown {
@@ -168,18 +187,24 @@ main {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: white;
   border: none;
-  padding: 10px 24px;
-  border-radius: 10px;
+  padding: 12px 28px; /* Increased for mobile touch */
+  border-radius: 12px;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 1rem; /* Slightly larger */
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   box-shadow: 
     0 8px 25px rgba(37, 99, 235, 0.3),
     0 0 15px rgba(124, 58, 237, 0.1);
+  touch-action: manipulation;
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
 }
 
 .btn-primary:hover {
@@ -317,14 +342,15 @@ main {
 }
 
 .text-content {
-  padding: 20px;
+  padding: 24px;
   overflow-y: auto;
   flex: 1;
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 1rem; /* Increased for mobile readability */
+  line-height: 1.7;
   white-space: pre-wrap;
   color: var(--text-main);
   background: white;
+  -webkit-overflow-scrolling: touch;
 }
 
 .copy-btn {
@@ -376,11 +402,20 @@ main {
   right: 0;
   width: 400px;
   height: 100vh;
+  height: 100dvh;
   background: white;
   z-index: 101;
   box-shadow: -10px 0 50px rgba(0, 0, 0, 0.1);
   padding: 40px;
   box-sizing: border-box;
+  overflow-y: auto;
+}
+
+@media (max-width: 600px) {
+  .side-menu {
+    width: 100%;
+    padding: 30px 24px;
+  }
 }
 
 .close-menu {
