@@ -252,9 +252,9 @@ function App() {
                 />
               </linearGradient>
             </defs>
-            <text x="50%" y="62" textAnchor="middle" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="62" letterSpacing="-2">
+            <text x="50%" y="62" textAnchor="middle" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="62" letterSpacing="0">
               <tspan fill="url(#logoGradient)">Meta</tspan>
-              <tspan fill="none" stroke="url(#logoGradient)" strokeWidth="2.5" strokeDasharray="1000" strokeDashoffset="0">Law</tspan>
+              <tspan fill="none" stroke="url(#logoGradient)" strokeWidth="1.8" strokeDasharray="1000" strokeDashoffset="0">Law</tspan>
             </text>
           </svg>
         </motion.div>
@@ -287,7 +287,7 @@ function App() {
                   hidden
                   ref={fileInputRef}
                   onChange={handleFileChange}
-                  accept="image/*,application/pdf"
+                  accept=".pdf,image/*,application/pdf"
                 />
                 <Upload size={40} strokeWidth={1} />
                 {file ? (

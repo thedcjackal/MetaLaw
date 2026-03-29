@@ -33,16 +33,17 @@ body {
 }
 
 .app-container {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
   z-index: 1;
 }
 
 .header {
-  height: 30vh;
+  min-height: 25vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end; /* Anchored to bottom */
@@ -52,24 +53,22 @@ body {
   animation: fadeInDown 1s ease-out;
   flex-shrink: 0;
   margin: 0;
-  padding: 0 20px 20px 20px; /* 20px padding bottom */
-  gap: 40px; /* Increased gap */
-  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 40px 20px 20px 20px;
+  gap: 20px;
+  transition: all 0.4s ease;
 }
 
 .results-view .header {
-  height: 25vh;
+  min-height: 15vh;
 }
 
 main {
-  height: 53vh;
+  flex: 1 0 auto;
   display: flex;
   align-items: flex-start; /* Aligned to top */
   justify-content: center;
-  flex-shrink: 0;
-  padding: 40px 20px 0 20px; /* 40px padding top */
+  padding: 20px;
   margin: 0;
-  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .results-view main {
@@ -77,7 +76,8 @@ main {
 }
 
 .footer {
-  height: 7vh;
+  height: 60px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
