@@ -55,12 +55,15 @@ body {
   0% {
     background-color: #f1f5f9;
   }
+
   33% {
     background-color: #eef2ff;
   }
+
   66% {
     background-color: #f5f3ff;
   }
+
   100% {
     background-color: #f1f5f9;
   }
@@ -331,7 +334,7 @@ main {
   align-items: center;
   text-align: center;
   justify-content: center;
-  gap: 10%;
+  gap: 1.6rem;
   height: 380px;
 }
 
