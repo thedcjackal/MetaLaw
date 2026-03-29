@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root {
@@ -298,9 +299,10 @@ main {
   justify-content: center;
   gap: 8px;
   box-shadow:
-    0 8px 25px rgba(37, 99, 235, 0.3),
     0 0 15px rgba(124, 58, 237, 0.1);
   touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn-primary:active {
@@ -641,6 +643,7 @@ textarea.input-field {
   flex-direction: column;
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 @media (max-width: 600px) {
