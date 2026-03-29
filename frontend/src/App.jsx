@@ -334,12 +334,11 @@ function App() {
                     justifyContent: 'center',
                     width: loading ? '450px' : 'auto',
                     maxWidth: '100%',
-                    minHeight: '56px',
-                    height: loading ? 'auto' : '56px',
+                    height: '56px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    padding: loading ? '12px 20px' : '0 28px',
+                    padding: loading ? '0 20px' : '0 28px',
                     overflow: 'hidden',
                     margin: loading ? '0 auto' : '0'
                   }}
