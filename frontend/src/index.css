@@ -53,16 +53,10 @@ body {
 
 @keyframes colorShift {
   0% {
-    background-color: #f1f5f9;
-  }
-  33% {
-    background-color: #eef2ff;
-  }
-  66% {
-    background-color: #f5f3ff;
+    filter: hue-rotate(0deg);
   }
   100% {
-    background-color: #f1f5f9;
+    filter: hue-rotate(360deg);
   }
 }
 
@@ -661,5 +655,17 @@ textarea.input-field {
 
   .lang-divider {
     display: none;
+  }
+
+  .hero-results, .hero-content {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  body {
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    animation: colorShift 20s linear infinite !important;
   }
 }
