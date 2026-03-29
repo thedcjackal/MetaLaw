@@ -17,7 +17,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('gemini-3-flash-preview');
+  const [selectedModel, setSelectedModel] = useState(localStorage.getItem('gemini_selected_model') || 'gemini-3.1-pro-preview');
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfReady, setPdfReady] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Processing...');
@@ -212,7 +212,11 @@ function App() {
                 <select
                   className="input-field"
                   value={selectedModel}
-                  onChange={(e) => setSelectedModel(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSelectedModel(val);
+                    localStorage.setItem('gemini_selected_model', val);
+                  }}
                 >
                   <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Preview - Ultra Reasoning)</option>
                   <option value="gemini-3-flash-preview">Gemini 3 Flash (Preview - Super Fast)</option>
